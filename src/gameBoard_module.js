@@ -45,37 +45,61 @@ function Gameboard(type) {
   ) {
     let start;
     let end;
+
     if (startCoordinateX === endCoordinateX) {
       start = startCoordinateY;
       end = endCoordinateY;
+
       if (
-        checkSurronding(
+        !checkSurronding(
           startCoordinateX,
           startCoordinateY,
           endCoordinateX,
           endCoordinateY,
         )
       ) {
-        for (let i = start; i <= end; i++) {
-          grid[startCoordinateX][i] = [1, selectedShip];
-        }
+        return false;
       }
+
+      for (let i = start; i <= end; i++) {
+        grid[startCoordinateX][i] = [selectedShip, start, end, 'horizontal'];
+      }
+
+      return true;
     } else {
       start = startCoordinateX;
       end = endCoordinateX;
+
       if (
-        checkSurronding(
-          startCoordinateY,
+        !checkSurronding(
           startCoordinateX,
-          endCoordinateY,
+          startCoordinateY,
           endCoordinateX,
+          endCoordinateY,
         )
       ) {
-        for (let i = start; i <= end; i++) {
-          grid[i][startCoordinateY] = [1, selectedShip];
-        }
+        return false;
       }
+
+      for (let i = start; i <= end; i++) {
+        grid[i][startCoordinateY] = [selectedShip, start, end, 'vertical'];
+      }
+
+      return true;
     }
+  }
+
+  if (type === 'computer') {
+    placeShip(ships[0], 5, 3, 5, 6);
+    placeShip(ships[1], 5, 1, 7, 1);
+    placeShip(ships[2], 8, 3, 8, 5);
+    placeShip(ships[3], 9, 0, 9, 1);
+    placeShip(ships[4], 2, 0, 2, 1);
+    placeShip(ships[5], 1, 7, 2, 7);
+    placeShip(ships[6], 0, 0, 0, 0);
+    placeShip(ships[7], 4, 9, 4, 9);
+    placeShip(ships[8], 6, 8, 6, 8);
+    placeShip(ships[9], 9, 9, 9, 9);
   }
 
   if (type === 'real') {
@@ -84,7 +108,7 @@ function Gameboard(type) {
     placeShip(ships[2], 8, 3, 8, 5);
     placeShip(ships[3], 9, 0, 9, 1);
     placeShip(ships[4], 2, 0, 2, 1);
-    placeShip(ships[5], 1, 7, 3, 7);
+    placeShip(ships[5], 1, 7, 2, 7);
     placeShip(ships[6], 0, 0, 0, 0);
     placeShip(ships[7], 4, 9, 4, 9);
     placeShip(ships[8], 6, 8, 6, 8);
