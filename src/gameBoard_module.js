@@ -128,6 +128,12 @@ function Gameboard(type) {
     return true;
   }
 
+  function resetBoard() {
+    grid = Array(10)
+      .fill(0)
+      .map(() => Array(10).fill(0));
+  }
+
   return {
     allSunk,
     placeShip,
@@ -136,6 +142,7 @@ function Gameboard(type) {
     ships,
     checkSurronding,
     grid,
+    resetBoard,
   };
 }
 

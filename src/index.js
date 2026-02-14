@@ -1,20 +1,23 @@
 import './styles.css';
 import { Player } from './player_module.js';
-import { createDisplay, createDropDown } from './DOM.js';
+import { createDisplay, createDropDown, createButtons } from './DOM.js';
 
 createDropDown();
 
-const player1 = Player('real');
+let player1 = Player('real');
 const player2 = Player('computer');
 
-function gameEngine() {
-  let display1 = createDisplay(player1);
-  let display2 = createDisplay(player2);
+let display1;
+let display2;
+let displayContainer;
 
+function gameEngine() {
+  display1 = createDisplay(player1);
+  display2 = createDisplay(player2);
   let turn = true; //true -> p1's turn, false -> p2's turn
 
   const main = document.querySelector('.main');
-  const displayContainer = document.createElement('div');
+  displayContainer = document.createElement('div');
   displayContainer.className = 'container';
 
   function isTurn() {
@@ -27,8 +30,18 @@ function gameEngine() {
     turn = !turn;
   }
 
-  main.append(displayContainer);
   isTurn();
+  main.append(displayContainer);
 }
 
 gameEngine('initial');
+createButtons();
+
+const buttonReset = document.getElementById('reset');
+
+buttonReset.addEventListener('click', () => {
+  player1 = Player('real');
+  display1 = createDisplay(player1);
+  displayContainer.innerHTML = '';
+  displayContainer.append(display1);
+});

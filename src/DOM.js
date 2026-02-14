@@ -44,7 +44,7 @@ function createDisplay(player) {
 
   let draggedShip = null;
   let originalPosition = null;
-  let orientation = 'horizontal'; 
+  let orientation = 'horizontal';
   let lastHoveredCell = null;
 
   function clearPreview() {
@@ -157,8 +157,12 @@ function createDisplay(player) {
 
         row.append(cell);
       }
+
       display.append(row);
     }
+    const h1 = document.createElement('h1');
+    h1.textContent = 'Place your Ships!';
+    display.append(h1);
   }
 
   display.addEventListener('mousemove', (e) => {
@@ -227,4 +231,79 @@ function createDisplay(player) {
   return display;
 }
 
-export { createDisplay, createDropDown };
+function createButtons() {
+  const main = document.querySelector('.main');
+
+  const gameActionButtons = document.createElement('div');
+  gameActionButtons.className = 'gameActionButtons';
+
+  const gridActionButtons = document.createElement('div');
+  gridActionButtons.className = 'gridActionButtons';
+
+  function start() {
+    const fieldset = document.createElement('fieldset');
+    const button = document.createElement('button');
+    button.id = 'start';
+    button.name = 'start';
+
+    const label = document.createElement('label');
+    label.htmlFor = 'start';
+    label.textContent = 'Start';
+
+    fieldset.append(button, label);
+    gameActionButtons.append(fieldset);
+  }
+
+  function leave() {
+    const fieldset = document.createElement('fieldset');
+    const button = document.createElement('button');
+    button.id = 'leave';
+    button.name = 'leave';
+
+    const label = document.createElement('label');
+    label.htmlFor = 'leave';
+    label.textContent = 'Leave';
+
+    fieldset.append(button, label);
+    gameActionButtons.append(fieldset);
+  }
+
+  function random() {
+    const fieldset = document.createElement('fieldset');
+    const button = document.createElement('button');
+    button.id = 'random';
+    button.name = 'random';
+
+    const label = document.createElement('label');
+    label.htmlFor = 'random';
+    label.textContent = 'Random';
+
+    fieldset.append(button, label);
+    gridActionButtons.append(fieldset);
+  }
+
+  function reset() {
+    const fieldset = document.createElement('fieldset');
+    const button = document.createElement('button');
+    button.id = 'reset';
+    button.name = 'reset';
+
+    const label = document.createElement('label');
+    label.htmlFor = 'reset';
+    label.textContent = 'Reset';
+
+    fieldset.append(button, label);
+    gridActionButtons.append(fieldset);
+  }
+
+  random();
+  reset();
+
+  start();
+  leave();
+
+  main.prepend(gameActionButtons);
+  main.append(gridActionButtons);
+}
+
+export { createDisplay, createDropDown, createButtons };
