@@ -38,7 +38,7 @@ function createDropDown() {
   });
 }
 
-function createDisplay(player) {
+function createDisplay(player, state, type, onAttack) {
   const display = document.createElement('div');
   display.className = 'display';
 
@@ -46,6 +46,8 @@ function createDisplay(player) {
   let originalPosition = null;
   let orientation = 'horizontal';
   let lastHoveredCell = null;
+
+  let hasAttacked = false;
 
   function clearPreview() {
     display.querySelectorAll('.preview, .invalid').forEach((el) => {
@@ -121,39 +123,66 @@ function createDisplay(player) {
         if (player.grid[i][j] === 0) {
           cell.className = 'empty';
         } else {
-          cell.className = 'occupied';
+          if (state === 'initial') cell.className = 'occupied';
+          else cell.className = 'empty';
         }
 
         cell.dataset.row = i;
         cell.dataset.col = j;
 
-        cell.addEventListener('mousedown', () => {
-          if (player.grid[i][j] === 0) return;
+        if (state === 'initial') {
+          cell.addEventListener('mousedown', () => {
+            if (player.grid[i][j] === 0) return;
 
-          const shipData = player.grid[i][j];
-          draggedShip = shipData[0];
-          orientation = shipData[3];
+            const shipData = player.grid[i][j];
+            draggedShip = shipData[0];
+            orientation = shipData[3];
 
-          originalPosition = {
-            ship: shipData[0],
-            start: shipData[1],
-            end: shipData[2],
-            row: i,
-            col: j,
-            orientation: shipData[3],
-          };
+            originalPosition = {
+              ship: shipData[0],
+              start: shipData[1],
+              end: shipData[2],
+              row: i,
+              col: j,
+              orientation: shipData[3],
+            };
 
-          if (orientation === 'horizontal') {
-            for (let k = shipData[1]; k <= shipData[2]; k++) {
-              player.grid[i][k] = 0;
+            if (orientation === 'horizontal') {
+              for (let k = shipData[1]; k <= shipData[2]; k++) {
+                player.grid[i][k] = 0;
+              }
+            } else {
+              for (let k = shipData[1]; k <= shipData[2]; k++) {
+                player.grid[k][j] = 0;
+              }
             }
-          } else {
-            for (let k = shipData[1]; k <= shipData[2]; k++) {
-              player.grid[k][j] = 0;
+            render();
+          });
+        } else {
+          cell.addEventListener('click', () => {
+            if (!hasAttacked && player.attacks[i][j] === null) {
+              hasAttacked = true;
+
+              player.receiveAttack(i, j);
+
+              if (player.attacks[i][j] === 1) {
+                cell.textContent = 'X';
+              } else if (player.attacks[i][j] === 0) {
+                cell.textContent = '•';
+              }
+
+              setTimeout(() => {
+                onAttack();
+              }, 700);
             }
+          });
+
+          if (player.attacks[i][j] === 1) {
+            cell.textContent = 'X';
+          } else if (player.attacks[i][j] === 0) {
+            cell.textContent = '•';
           }
-          render();
-        });
+        }
 
         row.append(cell);
       }
@@ -161,77 +190,83 @@ function createDisplay(player) {
       display.append(row);
     }
     const h1 = document.createElement('h1');
-    h1.textContent = 'Place your Ships!';
+    if (state === 'initial') h1.textContent = 'Place your Ships!';
+    else {
+      if (type === 'computer') h1.textContent = "Computer's turn";
+      else h1.textContent = 'Your turn';
+    }
     display.append(h1);
   }
 
-  display.addEventListener('mousemove', (e) => {
-    const cell = e.target.closest('div');
-    updatePreview(cell);
-  });
+  if (state === 'initial') {
+    display.addEventListener('mousemove', (e) => {
+      const cell = e.target.closest('div');
+      updatePreview(cell);
+    });
 
-  display.addEventListener('mouseup', (e) => {
-    if (!draggedShip) return;
-    const cell = e.target.closest('div');
-    if (!cell || !cell.dataset.row) return;
+    display.addEventListener('mouseup', (e) => {
+      if (!draggedShip) return;
+      const cell = e.target.closest('div');
+      if (!cell || !cell.dataset.row) return;
 
-    const row = Number(cell.dataset.row);
-    const col = Number(cell.dataset.col);
-    const length = draggedShip.shipLength;
+      const row = Number(cell.dataset.row);
+      const col = Number(cell.dataset.col);
+      const length = draggedShip.shipLength;
 
-    let startX = row;
-    let startY = col;
-    let endX, endY;
+      let startX = row;
+      let startY = col;
+      let endX, endY;
 
-    if (orientation === 'horizontal') {
-      endX = row;
-      endY = col + length - 1;
-    } else {
-      endX = row + length - 1;
-      endY = col;
-    }
-
-    const success = player.placeShip(draggedShip, startX, startY, endX, endY);
-
-    if (!success) {
-      if (originalPosition.orientation === 'horizontal') {
-        player.placeShip(
-          originalPosition.ship,
-          originalPosition.row,
-          originalPosition.start,
-          originalPosition.row,
-          originalPosition.end,
-        );
+      if (orientation === 'horizontal') {
+        endX = row;
+        endY = col + length - 1;
       } else {
-        player.placeShip(
-          originalPosition.ship,
-          originalPosition.start,
-          originalPosition.col,
-          originalPosition.end,
-          originalPosition.col,
-        );
+        endX = row + length - 1;
+        endY = col;
       }
-    }
 
-    draggedShip = null;
-    originalPosition = null;
-    lastHoveredCell = null;
-    clearPreview();
-    render();
-  });
+      const success = player.placeShip(draggedShip, startX, startY, endX, endY);
 
-  display.addEventListener('contextmenu', (e) => {
-    e.preventDefault();
-    if (!draggedShip) return;
-    orientation = orientation === 'horizontal' ? 'vertical' : 'horizontal';
-    updatePreview(lastHoveredCell);
-  });
+      if (!success) {
+        if (originalPosition.orientation === 'horizontal') {
+          player.placeShip(
+            originalPosition.ship,
+            originalPosition.row,
+            originalPosition.start,
+            originalPosition.row,
+            originalPosition.end,
+          );
+        } else {
+          player.placeShip(
+            originalPosition.ship,
+            originalPosition.start,
+            originalPosition.col,
+            originalPosition.end,
+            originalPosition.col,
+          );
+        }
+      }
+
+      draggedShip = null;
+      originalPosition = null;
+      lastHoveredCell = null;
+      clearPreview();
+      render();
+    });
+
+    display.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      if (!draggedShip) return;
+      orientation = orientation === 'horizontal' ? 'vertical' : 'horizontal';
+      updatePreview(lastHoveredCell);
+    });
+  }
 
   render();
   return display;
 }
 
-function createButtons() {
+function createButtons(state) {
   const main = document.querySelector('.main');
 
   const gameActionButtons = document.createElement('div');
@@ -250,6 +285,12 @@ function createButtons() {
     label.htmlFor = 'start';
     label.textContent = 'Start';
 
+    if (state === 'running') {
+      fieldset.className = 'inActive';
+    } else {
+      fieldset.className = 'Active';
+    }
+
     fieldset.append(button, label);
     gameActionButtons.append(fieldset);
   }
@@ -263,6 +304,12 @@ function createButtons() {
     const label = document.createElement('label');
     label.htmlFor = 'leave';
     label.textContent = 'Leave';
+
+    if (state === 'initial') {
+      fieldset.className = 'inActive';
+    } else {
+      fieldset.className = 'Active';
+    }
 
     fieldset.append(button, label);
     gameActionButtons.append(fieldset);
@@ -278,6 +325,12 @@ function createButtons() {
     label.htmlFor = 'random';
     label.textContent = 'Random';
 
+    if (state === 'initial') {
+      fieldset.className = 'Active';
+    } else {
+      fieldset.className = 'inActive';
+    }
+
     fieldset.append(button, label);
     gridActionButtons.append(fieldset);
   }
@@ -292,6 +345,12 @@ function createButtons() {
     label.htmlFor = 'reset';
     label.textContent = 'Reset';
 
+    if (state === 'initial') {
+      fieldset.className = 'Active';
+    } else {
+      fieldset.className = 'inActive';
+    }
+
     fieldset.append(button, label);
     gridActionButtons.append(fieldset);
   }
@@ -301,7 +360,6 @@ function createButtons() {
 
   start();
   leave();
-
   main.prepend(gameActionButtons);
   main.append(gridActionButtons);
 }

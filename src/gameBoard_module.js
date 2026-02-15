@@ -18,7 +18,9 @@ function Gameboard(type) {
     Ship(1),
   ];
 
-  let missed = new Array();
+  let attacks = Array(10)
+    .fill(null)
+    .map(() => Array(10).fill(null));
 
   function checkSurronding(
     startCoordinateX,
@@ -100,9 +102,7 @@ function Gameboard(type) {
     placeShip(ships[7], 4, 9, 4, 9);
     placeShip(ships[8], 6, 8, 6, 8);
     placeShip(ships[9], 9, 9, 9, 9);
-  }
-
-  if (type === 'real') {
+  } else {
     placeShip(ships[0], 5, 3, 5, 6);
     placeShip(ships[1], 5, 1, 7, 1);
     placeShip(ships[2], 8, 3, 8, 5);
@@ -116,9 +116,16 @@ function Gameboard(type) {
   }
 
   function receiveAttack(CoordinateX, CoordinateY) {
-    if (grid[CoordinateX][CoordinateY] !== 0)
-      grid[CoordinateX][CoordinateY][1].hit();
-    else missed.push(CoordinateX, CoordinateY);
+    if (grid[CoordinateX][CoordinateY] !== 0) {
+      grid[CoordinateX][CoordinateY][0].hit();
+      attacks[CoordinateX][CoordinateY] = 1;
+    } else attacks[CoordinateX][CoordinateY] = 0;
+  }
+
+  function resetAttacks() {
+    attacks = Array(10)
+      .fill(null)
+      .map(() => Array(10).fill(null));
   }
 
   function allSunk() {
@@ -128,21 +135,15 @@ function Gameboard(type) {
     return true;
   }
 
-  function resetBoard() {
-    grid = Array(10)
-      .fill(0)
-      .map(() => Array(10).fill(0));
-  }
-
   return {
     allSunk,
     placeShip,
     receiveAttack,
-    missed,
+    attacks,
     ships,
     checkSurronding,
     grid,
-    resetBoard,
+    resetAttacks,
   };
 }
 
