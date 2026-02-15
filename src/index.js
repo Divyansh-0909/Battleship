@@ -30,8 +30,8 @@ function changeturn() {
   turn = !turn;
 }
 
-function handleAttack() {
-  changeturn();
+function handleAttack(hasHit) {
+  if (hasHit === false) changeturn();
   renderDisplay();
 }
 

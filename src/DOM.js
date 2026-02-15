@@ -48,6 +48,7 @@ function createDisplay(player, state, type, onAttack) {
   let lastHoveredCell = null;
 
   let hasAttacked = false;
+  let hasHit = false;
 
   function clearPreview() {
     display.querySelectorAll('.preview, .invalid').forEach((el) => {
@@ -167,12 +168,13 @@ function createDisplay(player, state, type, onAttack) {
 
               if (player.attacks[i][j] === 1) {
                 cell.textContent = 'X';
+                hasHit = true;
               } else if (player.attacks[i][j] === 0) {
                 cell.textContent = '•';
               }
 
               setTimeout(() => {
-                onAttack();
+                onAttack(hasHit);
               }, 700);
             }
           });
