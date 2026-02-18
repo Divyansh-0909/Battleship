@@ -50,6 +50,8 @@ function createDisplay(player, state, type, onAttack) {
   let hasAttacked = false;
   let hasHit = false;
 
+  const remainingShips = player.ships.filter((ship) => !ship.isSunk()).length;
+
   function clearPreview() {
     display.querySelectorAll('.preview, .invalid').forEach((el) => {
       el.classList.remove('preview', 'invalid');
@@ -164,7 +166,7 @@ function createDisplay(player, state, type, onAttack) {
             if (!hasAttacked && player.attacks[i][j] === null) {
               hasAttacked = true;
 
-              let time = 700;
+              let time = 500;
 
               player.receiveAttack(i, j);
 
@@ -195,10 +197,12 @@ function createDisplay(player, state, type, onAttack) {
       display.append(row);
     }
     const h1 = document.createElement('h1');
-    if (state === 'initial') h1.textContent = 'Place your Ships!';
-    else {
+    if (state === 'initial') {
+      h1.textContent = 'Place your Ships!';
+    } else {
       if (type === 'computer') h1.textContent = "Computer's turn";
       else h1.textContent = 'Your turn';
+      h1.textContent += ` | Ships: ${remainingShips}`;
     }
     display.append(h1);
   }

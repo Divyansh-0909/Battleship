@@ -1,10 +1,9 @@
 ---
 name: Feature
 about: Suggest an idea for this project
-title: "[Feature] Purpose of this feature"
+title: '[Feature] Purpose of this feature'
 labels: enhancement
 assignees: ''
-
 ---
 
 **Description**
