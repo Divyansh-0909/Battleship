@@ -5,7 +5,7 @@ import { createDisplay, createDropDown, createButtons } from './DOM.js';
 createDropDown();
 
 let player1 = Player('Player1');
-const player2 = Player('computer');
+let player2 = Player('computer');
 
 let display1;
 let display2;
@@ -80,6 +80,8 @@ function renderDisplay() {
     const leaveButton = document.getElementById('leave');
     leaveButton.addEventListener('click', () => {
       state = 'initial';
+      player1 = Player('Player1');
+      player2 = Player('computer');
       renderDisplay();
     });
   }
