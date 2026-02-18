@@ -272,3 +272,19 @@ fieldset label {
   cursor: grabbing;
   transition: all 0.1s ease-in-out 0s;
 }
+
+.end {
+  color: #272727;
+  text-align: center;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+}
+
+.end h1 {
+  font-size: 40px;
+}
+
+.end h2 {
+  font-size: 30px;
+}

@@ -197,6 +197,7 @@ function createDisplay(player, state, type, onAttack) {
       display.append(row);
     }
     const h1 = document.createElement('h1');
+
     if (state === 'initial') {
       h1.textContent = 'Place your Ships!';
     } else {

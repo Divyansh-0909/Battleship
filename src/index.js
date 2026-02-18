@@ -48,12 +48,45 @@ function gameEngine() {
     displayContainer.innerHTML = '';
     displayContainer.append(display2);
   }
+
+  main.append(displayContainer);
+}
+
+function gameEnd() {
+  const main = document.querySelector('.main');
+  displayContainer = document.createElement('div');
+  displayContainer.className = 'container';
+
+  const div = document.createElement('div');
+  div.className = 'end';
+  const h1 = document.createElement('h1');
+  const h2 = document.createElement('h2');
+  h1.textContent = 'GAME OVER!';
+
+  if (player1.allSunk()) {
+    h2.textContent = player1.allSunk() === true ? 'You won!' : 'You lost!';
+  }
+
+  div.append(h1, h2);
+  displayContainer.append(div);
   main.append(displayContainer);
 }
 
 function renderDisplay() {
   const main = document.querySelector('.main');
   main.innerHTML = '';
+  if (player1.allSunk() || player2.allSunk()) {
+    state = 'end';
+    gameEnd();
+    createButtons('running');
+    const leaveButton = document.getElementById('leave');
+    leaveButton.addEventListener('click', () => {
+      state = 'initial';
+      player1 = Player('Player1');
+      player2 = Player('computer');
+      renderDisplay();
+    });
+  }
 
   if (state === 'initial') {
     gameInitialise();
