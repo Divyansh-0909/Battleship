@@ -15,7 +15,7 @@ let state = 'initial';
 function gameInitialise() {
   display1 = createDisplay(player1, 'initial', 'real');
   display2 = createDisplay(player2, 'initial', 'computer');
-
+  console.log(player1.grid);
   const main = document.querySelector('.main');
   displayContainer = document.createElement('div');
   displayContainer.className = 'container';
@@ -91,6 +91,7 @@ function renderDisplay() {
   if (state === 'initial') {
     gameInitialise();
     createButtons(state);
+
     const resetButton = document.getElementById('reset');
     resetButton.addEventListener('click', () => {
       player1 = Player('real');
@@ -102,6 +103,13 @@ function renderDisplay() {
     const startButton = document.getElementById('start');
     startButton.addEventListener('click', () => {
       state = 'running';
+      renderDisplay();
+    });
+
+    const randomButton = document.getElementById('random');
+    randomButton.addEventListener('click', () => {
+      player1.resetBoard();
+      player1.randomizeShips(player1.ships, player1.ships.length - 1);
       renderDisplay();
     });
   }

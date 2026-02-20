@@ -12,7 +12,12 @@ function Ship(shipLength) {
   function getHits() {
     return numberOfHits;
   }
-  return { hit, isSunk, shipLength, getHits };
+
+  function getLength() {
+    return shipLength;
+  }
+
+  return { hit, isSunk, getLength, getHits };
 }
 
 export { Ship };
