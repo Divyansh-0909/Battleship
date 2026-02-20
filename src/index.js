@@ -43,10 +43,10 @@ function gameEngine() {
   displayContainer.className = 'container';
   if (turn === true) {
     displayContainer.innerHTML = '';
-    displayContainer.append(display1);
+    displayContainer.append(display2);
   } else {
     displayContainer.innerHTML = '';
-    displayContainer.append(display2);
+    displayContainer.append(display1);
   }
 
   main.append(displayContainer);

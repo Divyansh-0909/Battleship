@@ -201,8 +201,8 @@ function createDisplay(player, state, type, onAttack) {
     if (state === 'initial') {
       h1.textContent = 'Place your Ships!';
     } else {
-      if (type === 'computer') h1.textContent = "Computer's turn";
-      else h1.textContent = 'Your turn';
+      if (type === 'computer') h1.textContent = 'Your turn';
+      else h1.textContent = "Computer's turn";
       h1.textContent += ` | Ships: ${remainingShips}`;
     }
     display.append(h1);
