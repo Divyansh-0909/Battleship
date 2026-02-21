@@ -64,7 +64,7 @@ function createDisplay(player, state, type, onAttack) {
     lastHoveredCell = cell;
     const row = Number(cell.dataset.row);
     const col = Number(cell.dataset.col);
-    const length = draggedShip.shipLength;
+    const length = draggedShip.getLength();
 
     clearPreview();
 
@@ -221,7 +221,7 @@ function createDisplay(player, state, type, onAttack) {
 
       const row = Number(cell.dataset.row);
       const col = Number(cell.dataset.col);
-      const length = draggedShip.shipLength;
+      const length = draggedShip.getLength();
 
       let startX = row;
       let startY = col;
