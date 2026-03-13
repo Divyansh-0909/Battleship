@@ -166,14 +166,14 @@ function createDisplay(player, state, type, onAttack) {
             if (!hasAttacked && player.attacks[i][j] === null) {
               hasAttacked = true;
 
-              let time = 500;
+              let time = player === 'computer' ? 500 : 1000;
 
               player.receiveAttack(i, j);
 
               if (player.attacks[i][j] === 1) {
                 cell.textContent = 'X';
                 hasHit = true;
-                time = 100;
+                time = player === 'computer' ? 100 : 600;
               } else if (player.attacks[i][j] === 0) {
                 cell.textContent = '•';
               }

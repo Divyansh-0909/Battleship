@@ -35,6 +35,11 @@ function handleAttack(hasHit) {
   renderDisplay();
 }
 
+function computerAttack(i, j) {
+  let cell = display1.querySelector(`[data-row="${i}"][data-col="${j}"]`);
+  cell.click();
+}
+
 function gameEngine() {
   display1 = createDisplay(player1, 'running', 'real', handleAttack);
   display2 = createDisplay(player2, 'running', 'computer', handleAttack);
@@ -47,6 +52,9 @@ function gameEngine() {
   } else {
     displayContainer.innerHTML = '';
     displayContainer.append(display1);
+    let i = Math.floor(Math.random() * 10);
+    let j = Math.floor(Math.random() * 10);
+    computerAttack(i, j);
   }
 
   main.append(displayContainer);

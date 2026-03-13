@@ -193,6 +193,7 @@ fieldset label {
 }
 
 .container {
+  transform: scale(1.2);
   background-color: #556047;
   display: grid;
   justify-content: center;
