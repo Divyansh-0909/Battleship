@@ -24,7 +24,9 @@ function gameInitialise() {
   main.append(displayContainer);
 }
 
-let turn = true;
+let turn = true; //true-> user's turn to attack, false-> computer's turn to attack
+let i; //x-coordinate for computer attacks
+let j; //y-coordinate for computer attacks
 
 function changeturn() {
   turn = !turn;
@@ -32,7 +34,7 @@ function changeturn() {
 
 function handleAttack(hasHit) {
   if (hasHit === false) changeturn();
-  renderDisplay();
+  renderDisplay(hasHit);
 }
 
 function computerAttack(i, j) {
@@ -40,7 +42,14 @@ function computerAttack(i, j) {
   cell.click();
 }
 
-function gameEngine() {
+function generateRandomCoordinates() {
+  do {
+    i = Math.floor(Math.random() * 10);
+    j = Math.floor(Math.random() * 10);
+  } while (player1.attacks[i][j] !== null);
+}
+
+function gameEngine(hasHit) {
   display1 = createDisplay(player1, 'running', 'real', handleAttack);
   display2 = createDisplay(player2, 'running', 'computer', handleAttack);
   const main = document.querySelector('.main');
@@ -52,9 +61,52 @@ function gameEngine() {
   } else {
     displayContainer.innerHTML = '';
     displayContainer.append(display1);
-    let i = Math.floor(Math.random() * 10);
-    let j = Math.floor(Math.random() * 10);
-    computerAttack(i, j);
+
+    //To add delay so that computer attacks after 400ms after display renders
+    setTimeout(() => {
+      if (hasHit === true && player1.grid[i][j][0].isSunk() === false) {
+        //if hit a ship then attack near the last attack
+        const directions = [
+          [1, 0],
+          [-1, 0],
+          [0, 1],
+          [0, -1],
+        ];
+
+        let newI, newJ;
+        let validMove = false;
+        let attempts = 0;
+
+        do {
+          const randomIndex = Math.floor(Math.random() * 4);
+          const [dx, dy] = directions[randomIndex];
+
+          newI = i + dx;
+          newJ = j + dy;
+          attempts++;
+
+          if (
+            newI >= 0 &&
+            newI <= 9 &&
+            newJ >= 0 &&
+            newJ <= 9 &&
+            player1.attacks[newI][newJ] === null
+          ) {
+            validMove = true;
+          }
+        } while (!validMove && attempts < 15);
+
+        if (validMove) {
+          i = newI;
+          j = newJ;
+        } else {
+          generateRandomCoordinates();
+        }
+      } else {
+        generateRandomCoordinates();
+      }
+      computerAttack(i, j);
+    }, 400);
   }
 
   main.append(displayContainer);
@@ -72,7 +124,9 @@ function gameEnd() {
   h1.textContent = 'GAME OVER!';
 
   if (player1.allSunk()) {
-    h2.textContent = player1.allSunk() === true ? 'You won!' : 'You lost!';
+    h2.textContent = 'You lost!';
+  } else if (player2.allSunk()) {
+    h2.textContent = 'You won!';
   }
 
   div.append(h1, h2);
@@ -80,7 +134,7 @@ function gameEnd() {
   main.append(displayContainer);
 }
 
-function renderDisplay() {
+function renderDisplay(hasHit) {
   const main = document.querySelector('.main');
   main.innerHTML = '';
   if (player1.allSunk() || player2.allSunk()) {
@@ -123,7 +177,7 @@ function renderDisplay() {
   }
 
   if (state === 'running') {
-    gameEngine();
+    gameEngine(hasHit);
     createButtons(state);
 
     const leaveButton = document.getElementById('leave');
