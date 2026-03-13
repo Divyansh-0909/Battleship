@@ -27,6 +27,7 @@ function gameInitialise() {
 let turn = true; //true-> user's turn to attack, false-> computer's turn to attack
 let i; //x-coordinate for computer attacks
 let j; //y-coordinate for computer attacks
+let huntMemory = [];
 
 function changeturn() {
   turn = !turn;
@@ -64,25 +65,56 @@ function gameEngine(hasHit) {
 
     //To add delay so that computer attacks after 400ms after display renders
     setTimeout(() => {
-      if (hasHit === true && player1.grid[i][j][0].isSunk() === false) {
-        //if hit a ship then attack near the last attack
-        const directions = [
+      if (hasHit && player1.grid[i][j] !== 0) {
+        const hitShip = player1.grid[i][j][0];
+
+        if (hitShip.isSunk()) {
+          huntMemory = []; // Clear memory to resume random hunting.
+        } else {
+          huntMemory.push([i, j]);
+        }
+      }
+
+      let newI, newJ;
+      let validMove = false;
+
+      if (huntMemory.length > 0) {
+        let directions = [
           [1, 0],
           [-1, 0],
           [0, 1],
           [0, -1],
         ];
 
-        let newI, newJ;
-        let validMove = false;
-        let attempts = 0;
+        // If we have 2+ hits, find the orientation dynamically
+        if (huntMemory.length >= 2) {
+          const firstHit = huntMemory[0];
+          const lastHit = huntMemory[huntMemory.length - 1];
 
+          if (firstHit[0] === lastHit[0]) {
+            directions = [
+              [0, 1],
+              [0, -1],
+            ];
+          } else {
+            directions = [
+              [1, 0],
+              [-1, 0],
+            ];
+          }
+        }
+
+        let attempts = 0; //To prevent infinite loops which can happen due to getting repeated random coordinates.
         do {
-          const randomIndex = Math.floor(Math.random() * 4);
-          const [dx, dy] = directions[randomIndex];
+          const [dx, dy] =
+            directions[Math.floor(Math.random() * directions.length)];
 
-          newI = i + dx;
-          newJ = j + dy;
+          // Branch off from a random known hit (prevents getting stuck if it hits the middle of a ship first)
+          const baseHit =
+            huntMemory[Math.floor(Math.random() * huntMemory.length)];
+
+          newI = baseHit[0] + dx;
+          newJ = baseHit[1] + dy;
           attempts++;
 
           if (
@@ -94,17 +126,16 @@ function gameEngine(hasHit) {
           ) {
             validMove = true;
           }
-        } while (!validMove && attempts < 15);
+        } while (!validMove && attempts < 20);
+      }
 
-        if (validMove) {
-          i = newI;
-          j = newJ;
-        } else {
-          generateRandomCoordinates();
-        }
+      if (validMove) {
+        i = newI;
+        j = newJ;
       } else {
         generateRandomCoordinates();
       }
+
       computerAttack(i, j);
     }, 400);
   }

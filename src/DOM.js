@@ -41,7 +41,6 @@ function createDropDown() {
 function createDisplay(player, state, type, onAttack) {
   const display = document.createElement('div');
   display.className = 'display';
-
   let draggedShip = null;
   let originalPosition = null;
   let orientation = 'horizontal';
