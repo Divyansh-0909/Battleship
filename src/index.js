@@ -2,7 +2,7 @@ import './styles.css';
 import { Player } from './player_module.js';
 import { createDisplay, createDropDown, createButtons } from './DOM.js';
 
-createDropDown();
+//createDropDown();
 
 let player1 = Player('Player1');
 let player2 = Player('computer');
