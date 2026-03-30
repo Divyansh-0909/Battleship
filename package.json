@@ -8,6 +8,7 @@
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "lint": "eslint .",
     "format": "prettier --write ."
+    "build": "webpack --mode production"
   },
   "repository": {
     "type": "git",
